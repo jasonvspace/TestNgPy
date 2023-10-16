@@ -1,0 +1,106 @@
+<div nz-row nzJustify="end">
+  <div nz-col>
+    <button nz-button nzType="primary" (click)="showModal()">
+      <span nz-icon nzType="plus"></span>
+      Add
+    </button>
+  </div>
+</div>
+<p></p>
+
+<nz-table #basicTable [nzData]="projects" [nzLoading]="loading">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Completed</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of basicTable.data">
+      <td [width]="50">{{ data.id }}</td>
+      <td>{{ data.title }}</td>
+      <td>{{ data.description }}</td>
+      <td [width]="120">
+        <nz-switch
+          [ngModel]="data.active"
+          (ngModelChange)="handleChangeActive(data.id)"
+        ></nz-switch>
+      </td>
+      <td nzRight [width]="120">
+        <button
+          nz-button
+          nzType="primary"
+          nzShape="circle"
+          (click)="showModal(data)"
+        >
+          <span nz-icon nzType="edit"></span>
+        </button>
+        <nz-divider nzType="vertical"></nz-divider>
+        <button
+          nz-popconfirm
+          nzPopconfirmTitle="Are you sure delete this item?"
+          (nzOnConfirm)="confirmDelete(data.id)"
+          (nzOnCancel)="cancel()"
+          nzPopconfirmPlacement="left"
+          nz-button
+          nzType="primary"
+          nzShape="circle"
+          nzDanger
+        >
+          <span nz-icon nzType="delete"></span>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="(item_id ? '#' + item_id + ' Update' : 'Create') + ' Project'"
+  (nzOnCancel)="isVisible = false"
+  [nzFooter]="null"
+>
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="5" nzRequired>Title</nz-form-label>
+        <nz-form-control
+          [nzSpan]="19"
+          nzHasFeedback
+          [nzErrorTip]="emailErrorTpl"
+        >
+          <input nz-input formControlName="title" placeholder="Title" />
+          <ng-template #emailErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">
+              Please input title!
+            </ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSpan]="5">Description</nz-form-label>
+        <nz-form-control [nzSpan]="19">
+          <nz-textarea-count [nzMaxCharacterCount]="2000">
+            <textarea
+              formControlName="description"
+              nz-input
+              rows="2"
+              placeholder="write any thing"
+            ></textarea>
+          </nz-textarea-count>
+        </nz-form-control>
+      </nz-form-item>
+      <div nz-row nzJustify="end">
+        <div nz-col>
+          <button nz-button nzType="primary" [disabled]="!validateForm.valid">
+            Submit
+          </button>
+        </div>
+      </div>
+    </form>
+  </ng-container>
+</nz-modal>
